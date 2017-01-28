@@ -1,11 +1,15 @@
 package org.usfirst.frc.team1714.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.cscore.*;
-import org.opencv.core.Mat;
+import org.opencv.core.*;
+import org.opencv.imgproc.*;
+
+import com.ctre.CANTalon;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,9 +28,13 @@ public class Robot extends IterativeRobot {
 	GripPipelineTape pipe;
 	CvSink sink;
 	CvSource outstream;
+	int centerX;
+	CANTalon talon;
 
 	@Override
 	public void robotInit() {
+		drive = new RobotDrive(0, 1);
+		
 		camera = CameraServer.getInstance().startAutomaticCapture();
 		System.out.print(camera.getVideoMode().toString());
 		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 320, 240, 30);
@@ -59,6 +67,18 @@ public class Robot extends IterativeRobot {
 		sink.grabFrame(source);
 		pipe.process(source);
 		out = pipe.maskOutput();
+		if(!pipe.filterContoursOutput().isEmpty())
+		{
+			Rect r = Imgproc.boundingRect(pipe.filterContoursOutput().get(0));
+			centerX = r.x + (r.width / 2);
+			System.out.println(((double)centerX)/320);
+			drive.tankDrive(0, ((double)centerX)/320);
+		}
+		else
+		{
+			System.out.println("it's 0 time");
+			drive.tankDrive(0, 0);
+		}
 		outstream.putFrame(out);
 	}
 
