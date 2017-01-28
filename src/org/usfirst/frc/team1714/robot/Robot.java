@@ -4,7 +4,8 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.CameraServer;
-import edu.wpi.cscore;
+import edu.wpi.cscore.*;
+import org.opencv.core.Mat;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -19,19 +20,27 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
 	UsbCamera camera;
-	Mat source;
-	GripPipeLineTape pipe;
+	Mat source, out;
+	GripPipelineTape pipe;
+	CvSink sink;
+	CvSource outstream;
 
 	@Override
 	public void robotInit() {
 		camera = CameraServer.getInstance().startAutomaticCapture();
-		System.out.print(camera.getVideoMode().pixelFormat().valueOf().getValue());
+		System.out.print(camera.getVideoMode().toString());
 		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 320, 240, 30);
-		camera.setExposureManual(15);
+		camera.setExposureManual(5);
 		camera.setExposureHoldCurrent();
+		camera.setWhiteBalanceManual(4500);
+		camera.setWhiteBalanceHoldCurrent();
+		
+		outstream = CameraServer.getInstance().putVideo("Mask", 320, 240);
 		
 		source = new Mat();
-		
+		out = new Mat();
+		sink = CameraServer.getInstance().getVideo();
+
 		pipe = new GripPipelineTape();
 	}
 
@@ -42,14 +51,15 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void autonomousPeriodic() {
-		switch (autoSelected) {
 
-		}
 	}
 
 	@Override
 	public void teleopPeriodic() {
+		sink.grabFrame(source);
 		pipe.process(source);
+		out = pipe.maskOutput();
+		outstream.putFrame(out);
 	}
 
 	@Override
