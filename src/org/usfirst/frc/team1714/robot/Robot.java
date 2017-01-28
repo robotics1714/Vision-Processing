@@ -19,6 +19,8 @@ public class Robot extends IterativeRobot {
 	String autoSelected;
 	SendableChooser<String> chooser = new SendableChooser<>();
 	UsbCamera camera;
+	Mat source;
+	GripPipeLineTape pipe;
 
 	@Override
 	public void robotInit() {
@@ -27,6 +29,10 @@ public class Robot extends IterativeRobot {
 		camera.setVideoMode(VideoMode.PixelFormat.kMJPEG, 320, 240, 30);
 		camera.setExposureManual(15);
 		camera.setExposureHoldCurrent();
+		
+		source = new Mat();
+		
+		pipe = new GripPipelineTape();
 	}
 
 	@Override
@@ -43,6 +49,7 @@ public class Robot extends IterativeRobot {
 
 	@Override
 	public void teleopPeriodic() {
+		pipe.process(source);
 	}
 
 	@Override
