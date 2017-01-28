@@ -41,9 +41,9 @@ public class GripPipelineTape {
 	public void process(Mat source0) {
 		// Step HSV_Threshold0:
 		Mat hsvThresholdInput = source0;
-		double[] hsvThresholdHue = {51.79856115107914, 80.1706484641638};
+		double[] hsvThresholdHue = {38.84892086330936, 83.2423208191126};
 		double[] hsvThresholdSaturation = {146.76258992805754, 255.0};
-		double[] hsvThresholdValue = {13.758992805755396, 255.0};
+		double[] hsvThresholdValue = {29.81115107913669, 255.0};
 		hsvThreshold(hsvThresholdInput, hsvThresholdHue, hsvThresholdSaturation, hsvThresholdValue, hsvThresholdOutput);
 
 		// Step Mask0:
@@ -58,7 +58,7 @@ public class GripPipelineTape {
 
 		// Step Filter_Contours0:
 		ArrayList<MatOfPoint> filterContoursContours = findContoursOutput;
-		double filterContoursMinArea = 60.0;
+		double filterContoursMinArea = 20.0;
 		double filterContoursMinPerimeter = 0.0;
 		double filterContoursMinWidth = 0.0;
 		double filterContoursMaxWidth = 9.99999999E8;
